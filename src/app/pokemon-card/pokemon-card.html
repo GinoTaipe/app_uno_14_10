@@ -1,0 +1,10 @@
+<article class="card" [attr.aria-label]="'Ver detalle de ' + displayName(pokemon().name)">
+  <span class="id">#{{ pad(pokemon().id) }}</span>
+  <img [src]="sprite(pokemon())" [alt]="displayName(pokemon().name)" loading="lazy" width="120" height="120" />
+  <h3>{{ displayName(pokemon().name) }}</h3>
+  <ul class="types">
+    @for (t of pokemon().types; track t.type.name) {
+      <li [class]="'type type-' + t.type.name">{{ displayName(t.type.name) }}</li>
+    }
+  </ul>
+</article>

@@ -1,0 +1,56 @@
+<div class="backdrop" (click)="close.emit()">
+  <div
+    class="panel"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="displayName(pokemon().name)"
+    (click)="$event.stopPropagation()"
+  >
+    <button type="button" class="close" aria-label="Cerrar" (click)="close.emit()">✕</button>
+    <span class="id">#{{ pad(pokemon().id) }}</span>
+    <img
+      class="sprite"
+      [src]="sprite(pokemon())"
+      [alt]="displayName(pokemon().name)"
+      width="200"
+      height="200"
+    />
+    <h2>{{ displayName(pokemon().name) }}</h2>
+    <ul class="types">
+      @for (t of pokemon().types; track t.type.name) {
+        <li [class]="'type type-' + t.type.name">{{ displayName(t.type.name) }}</li>
+      }
+    </ul>
+    <div class="facts">
+      <div><span>Altura</span><strong>{{ heightMeters(pokemon().height) }} m</strong></div>
+      <div><span>Peso</span><strong>{{ weightKg(pokemon().weight) }} kg</strong></div>
+    </div>
+    <section>
+      <h3>Estadísticas base</h3>
+      <ul class="stats">
+        @for (s of pokemon().stats; track s.stat.name) {
+          <li>
+            <span class="stat-name">{{ statLabel(s.stat.name) }}</span>
+            <span class="stat-value">{{ s.base_stat }}</span>
+            <span class="bar">
+              <span class="fill" [style.width.%]="statPercent(s.base_stat)"></span>
+            </span>
+          </li>
+        }
+      </ul>
+    </section>
+    <section>
+      <h3>Habilidades</h3>
+      <ul class="abilities">
+        @for (a of pokemon().abilities; track a.ability.name) {
+          <li>
+            {{ displayName(a.ability.name) }}
+            @if (a.is_hidden) {
+              <em>(oculta)</em>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+</div>

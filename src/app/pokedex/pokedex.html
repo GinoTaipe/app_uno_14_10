@@ -1,0 +1,57 @@
+<header class="header">
+  <h1>Pokédex</h1>
+  <input
+    type="search"
+    class="search"
+    placeholder="Buscar por nombre o número…"
+    [value]="searchTerm()"
+    (input)="onSearchInput($event)"
+    aria-label="Buscar Pokémon"
+  />
+</header>
+
+@if (availableTypes().length > 0) {
+  <div class="filters" role="group" aria-label="Filtrar por tipo">
+    @for (t of availableTypes(); track t.name) {
+      <button
+        type="button"
+        class="chip"
+        [class.active]="selectedTypes().includes(t.name)"
+        (click)="toggleType(t.name)"
+      >
+        {{ t.name }}
+      </button>
+    }
+    @if (selectedTypes().length > 0 || searchTerm()) {
+      <button type="button" class="clear" (click)="clearFilters()">Limpiar</button>
+    }
+  </div>
+}
+
+@if (loading()) {
+  <p class="status">Cargando Pokédex…</p>
+} @else {
+  <p class="count">{{ filtered().length }} pokémon encontrados</p>
+  @if (pageDetails().length === 0 && !pageLoading()) {
+    <p class="status">No se encontraron Pokémon con esos filtros.</p>
+  } @else {
+    <div class="grid">
+      @for (p of pageDetails(); track p.id) {
+        <app-pokemon-card [pokemon]="p" (select)="openDetail($event)" />
+      }
+    </div>
+  }
+  @if (totalPages() > 1) {
+    <nav class="pagination" aria-label="Paginación">
+      <button type="button" (click)="prevPage()" [disabled]="page() === 1">← Anterior</button>
+      <span>Página {{ page() }} de {{ totalPages() }}</span>
+      <button type="button" (click)="nextPage()" [disabled]="page() === totalPages()">
+        Siguiente →
+      </button>
+    </nav>
+  }
+}
+
+@if (selectedPokemon(); as pokemon) {
+  <app-pokemon-modal [pokemon]="pokemon" (close)="closeDetail()" />
+}

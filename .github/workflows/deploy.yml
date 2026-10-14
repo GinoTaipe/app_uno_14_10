@@ -1,0 +1,46 @@
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx ng test --watch=false
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.build-publish.outputs.page_url }}
+    steps:
+      - id: build-publish
+        uses: bitovi/github-actions-angular-to-github-pages@v1.0.0
+        with:
+          # El proyecto Angular se llama "app_uno" (angular.json), no el nombre del repo.
+          path: dist/app_uno/browser
+          # El base-href debe coincidir con el nombre del repo en GitHub.
+          build_command: npm run build -- --base-href=/app_uno_14_10/
+          caching: true
